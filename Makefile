@@ -4,13 +4,14 @@ all: multistrap
 .PHONY: multistrap docker-image docker-shell build builder-shell release clean re
 
 
-multistrap: chroot build qemu-arm-static
-	docker run -it --privileged --rm -v $(PWD)/chroot:/chroot -v $(PWD)/multistrap.conf:/multistrap.conf moul/emdebian-builder
+#multistrap: chroot build qemu-arm-static
+multistrap: chroot build
+	docker run -it --privileged --rm -v $(PWD)/chroot:/chroot -v $(PWD)/multistrap.conf:/multistrap.conf local/ubuntu-builder
 	mkdir -p chroot/usr/local/bin/
-	cp -f qemu-arm-static chroot/usr/local/bin/
-	chmod +x chroot/usr/local/bin/qemu-arm-static
+	#cp -f qemu-arm-static chroot/usr/local/bin/
+	#chmod +x chroot/usr/local/bin/qemu-arm-static
 	if [ ! -f chroot/bin/sh ]; then ln -s busybox chroot/bin/sh; fi
-	du -hs chroot
+	sudo du -hs chroot
 
 
 docker-image: chroot
@@ -26,19 +27,20 @@ docker-shell: docker-image
 
 
 build:
-	docker build -t moul/emdebian-builder .
+	docker build -t local/ubuntu-builder .
 
 
 builder-shell: build
-	docker run -it --rm -v $(PWD)/chroot:/chroot -v $(PWD)/multistrap.conf:/multistrap.conf moul/emdebian-builder bash
+	docker run -it --rm -v $(PWD)/chroot:/chroot -v $(PWD)/multistrap.conf:/multistrap.conf local/ubuntu-builder bash
 
 
-release: build
-	docker push moul/emdebian-builder
+release:
+	sudo tar -C chroot -c . | docker import - tuapuikia/focal:latest && docker push tuapuikia/focal:latest
 
 
 clean:
-	rm -rf chroot
+	sudo rm -rf chroot
+	docker rmi local/ubuntu-builder
 
 
 re: clean multistrap
@@ -48,5 +50,5 @@ re: clean multistrap
 chroot:
 	mkdir -p chroot
 
-qemu-arm-static:
-	wget --no-check-certificate https://github.com/armbuild/qemu-user-static/raw/master/x86_64/qemu-arm-static -O $@
+#qemu-arm-static:
+#	wget --no-check-certificate https://github.com/armbuild/qemu-user-static/raw/master/x86_64/qemu-arm-static -O $@

@@ -1,6 +1,7 @@
-FROM debian:jessie
+FROM ubuntu:latest
 MAINTAINER Manfred Touron <m@42.am> @moul
 
+ARG DEBIAN_FRONTEND=noninteractive
 
 # Install basic tools
 RUN apt-get update \
@@ -19,8 +20,11 @@ RUN apt-get -y install \
     gpgv \
     multistrap \
     perl-base \
+    patch \
  && apt-get clean
 
+COPY patch /tmp/patch
+RUN patch -p1 < /tmp/patch
 
 COPY multistrap.conf /
 COPY build.sh /

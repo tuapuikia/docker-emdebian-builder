@@ -1,0 +1,12 @@
+--- /usr/sbin/multistrap 2020-10-13 22:55:14.230975715 +0800
++++ /usr/sbin/multistrap_mod	2020-10-13 22:56:32.544020876 +0800
+@@ -320,7 +320,8 @@
+ $config_str .= " -o Apt::Get::AllowUnauthenticated=true"
+ 	if (defined $noauth);
+ $config_str .= " -o Apt::Get::Download-Only=true";
+-$config_str .= " -o Apt::Install-Recommends=false"
++$config_str .= " -o Apt::Install-Recommends=false";
++$config_str .= " -o Acquire::AllowInsecureRepositories=yes"
+ 	if (not defined $allow_recommends);
+ $config_str .= " -o Dir=" . shellescape($dir);
+ $config_str .= " -o Dir::Etc=" . shellescape("${dir}${etcdir}");
