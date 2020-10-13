@@ -1,5 +1,5 @@
 FROM ubuntu:latest
-MAINTAINER Manfred Touron <m@42.am> @moul
+MAINTAINER tuapuikia @stan.wong
 
 ARG DEBIAN_FRONTEND=noninteractive
 
